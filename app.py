@@ -39,7 +39,7 @@ model = load_model()
 
 # --- TÍTULO ---
 st.markdown(
-    "<h1 style='text-align: center;'>🧠 Deep Learning for Brain Tumor</h1><br>",
+    "<h2 style='text-align: center;'>🧠 Deep Learning for Brain Tumor</h2><br>",
     unsafe_allow_html=True
 )
 
