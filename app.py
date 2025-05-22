@@ -9,8 +9,8 @@ from PIL import Image
 
 # --- CONFIGURACIÓN DE LA PÁGINA ---
 st.set_page_config(
-    page_title="Clasificador de Tumores Cerebrales",
-    layout="wide",  # Modo ancho
+    page_title="Deep Learning for Brain Tumor MRI",
+    layout="wide",
 )
 
 # --- CONSTANTES ---
@@ -37,50 +37,48 @@ def preprocess_image(image: Image.Image):
 # --- CARGA DE MODELO UNA ÚNICA VEZ ---
 model = load_model()
 
-# --- INTERFAZ ---
-st.title("🧠 Clasificador de Tumores Cerebrales")
+# --- TÍTULO PRINCIPAL ---
+st.markdown("<h1 style='text-align: center;'>🧠 Deep Learning for Brain Tumor MRI</h1>", unsafe_allow_html=True)
 
-# Dividir la pantalla en 3 columnas (con una central muy delgada como separador)
+# --- LAYOUT EN 3 COLUMNAS ---
 col1, col_mid, col2 = st.columns([1, 0.1, 1])
 
 # --- Columna izquierda: Cargar imagen y botón ---
 with col1:
-    uploaded_file = st.file_uploader("📤 Sube una imagen", type=["png", "jpg", "jpeg"])
+    uploaded_file = st.file_uploader("📤 Sube una imagen de resonancia magnética", type=["png", "jpg", "jpeg"])
     predict_btn = st.button("🔍 Predecir")
 
-# --- Columna derecha: Mostrar imagen y resultado ---
+    # Mostrar resultados si se presionó el botón
+    if uploaded_file and predict_btn:
+        image = Image.open(uploaded_file).convert("RGB")
+        img_preprocessed = preprocess_image(image)
+        prediction_probs = model.predict(img_preprocessed)
+        prob_tumor = prediction_probs[0][0]
+
+        if prob_tumor >= 0.5:
+            predicted_class = CLASS_NAMES[1]
+            confidence = prob_tumor * 100
+        else:
+            predicted_class = CLASS_NAMES[0]
+            confidence = (1 - prob_tumor) * 100
+
+        st.markdown("### 🧾 Resultado del diagnóstico")
+        st.markdown(f"**Predicción:** {predicted_class}")
+        st.markdown(f"**Confianza:** {confidence:.2f}%")
+
+# --- Columna derecha: Mostrar imagen subida ---
 with col2:
     if uploaded_file:
         image = Image.open(uploaded_file).convert("RGB")
+        st.markdown("### 🖼️ Imagen cargada")
+        st.image(image, caption="Imagen de entrada", use_column_width=True)
 
-        # Mostrar imagen con altura máxima
-        st.image(image, caption="Imagen cargada", use_column_width=True, output_format="JPEG", clamp=True)
-
-        if predict_btn:
-            # Predecir
-            img_preprocessed = preprocess_image(image)
-            prediction_probs = model.predict(img_preprocessed)
-            prob_tumor = prediction_probs[0][0]
-
-            # Interpretar resultado
-            if prob_tumor >= 0.5:
-                predicted_class = CLASS_NAMES[1]
-                confidence = prob_tumor * 100
-            else:
-                predicted_class = CLASS_NAMES[0]
-                confidence = (1 - prob_tumor) * 100
-
-            # Mostrar resultado
-            st.markdown("### 🧾 Resultado")
-            st.markdown(f"**Predicción:** {predicted_class}")
-            st.markdown(f"**Confianza:** {confidence:.2f}%")
-
-# --- Estilos CSS para limitar altura de imagen ---
+# --- ESTILOS PERSONALIZADOS ---
 st.markdown("""
 <style>
-    img {
-        max-height: 512px;
-        object-fit: contain;
-    }
+img {
+    max-height: 300px !important;
+    object-fit: contain;
+}
 </style>
 """, unsafe_allow_html=True)
