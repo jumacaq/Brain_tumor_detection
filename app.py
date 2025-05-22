@@ -70,7 +70,6 @@ with col1:
 with col2:
     if uploaded_file:
         image = Image.open(uploaded_file).convert("RGB")
-        st.markdown("### 🖼️ Imagen cargada")
         st.image(image, caption="Imagen de entrada", use_column_width=True)
 
 # --- ESTILOS PERSONALIZADOS ---
