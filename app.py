@@ -39,27 +39,21 @@ model = load_model()
 
 # --- TÍTULO ---
 st.markdown(
-    "<h1 style='text-align: center;'>🧠 Deep Learning for Brain Tumor MRI</h1><br>",
+    "<h1 style='text-align: center;'>🧠 Deep Learning for Brain Tumor MRI</h1><br><br>",
     unsafe_allow_html=True
 )
 
 # --- DISEÑO EN 3 COLUMNAS ---
 col1, col_mid, col2 = st.columns([1, 0.1, 1])
 
-# --- VARIABLES DE CONTROL ---
-predict_btn = False
-image = None
-
-# --- PRIMERA COLUMNA: CARGA Y BOTÓN ---
 with col1:
     uploaded_file = st.file_uploader("📤 Sube una imagen de resonancia magnética", type=["png", "jpg", "jpeg"])
+    predict_btn = st.button("🔍 Predecir")
+
+with col2:
     if uploaded_file:
         image = Image.open(uploaded_file).convert("RGB")
-        predict_btn = st.button("🔍 Predecir")
 
-# --- SEGUNDA COLUMNA: IMAGEN Y RESULTADO ---
-with col2:
-    if image:
         if predict_btn:
             img_preprocessed = preprocess_image(image)
             prediction_probs = model.predict(img_preprocessed)
