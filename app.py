@@ -68,7 +68,6 @@ with col2:
                 confidence = (1 - prob_tumor) * 100
 
             # Mostrar resultados justo debajo de la imagen
-            st.markdown("---")
             st.markdown("### 🧾 Resultado del diagnóstico")
             st.markdown(f"**Predicción:** {predicted_class}")
             st.markdown(f"**Confianza:** {confidence:.2f}%")
