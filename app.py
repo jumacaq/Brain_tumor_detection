@@ -48,12 +48,13 @@ col1, col_mid, col2 = st.columns([1, 0.1, 1])
 
 with col1:
     uploaded_file = st.file_uploader("📤 Sube una imagen de resonancia magnética", type=["png", "jpg", "jpeg"])
-    predict_btn = st.button("🔍 Predecir")
+    if uploaded_file:
+        predict_btn = st.button("🔍 Predecir")
 
 with col2:
     if uploaded_file:
         image = Image.open(uploaded_file).convert("RGB")
-
+        st.image(image, use_column_width=True)
         if predict_btn:
             img_preprocessed = preprocess_image(image)
             prediction_probs = model.predict(img_preprocessed)
