@@ -46,9 +46,12 @@ st.markdown(
 # --- DISEÑO EN 3 COLUMNAS ---
 col1, col_mid, col2 = st.columns([1, 0.1, 1])
 
+predict_btn = False
+
 with col1:
     uploaded_file = st.file_uploader("📤 Sube una imagen de resonancia magnética", type=["png", "jpg", "jpeg"])
     if uploaded_file:
+        st.image(uploaded_file, caption="Imagen cargada", use_column_width=True)
         predict_btn = st.button("🔍 Predecir")
 
 with col2:
