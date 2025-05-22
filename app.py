@@ -7,13 +7,19 @@ from tensorflow import keras
 from tensorflow.keras.applications.resnet import preprocess_input
 from PIL import Image
 
-# Constantes
+# --- CONFIGURACIÓN DE LA PÁGINA ---
+st.set_page_config(
+    page_title="Clasificador de Tumores Cerebrales",
+    layout="wide",  # Modo ancho
+)
+
+# --- CONSTANTES ---
 MODEL_FILENAME = "best_resnet_model.h5"
 GDRIVE_ID = "1LdaSNQbdHSLJdEpB0Jogqwk0Y2g98W5e"
 IMG_SIZE = (224, 224)
 CLASS_NAMES = ['Healthy', 'Tumor']
 
-# Descargar y cargar modelo
+# --- FUNCIONES ---
 @st.cache_resource
 def load_model():
     if not os.path.exists(MODEL_FILENAME):
@@ -22,37 +28,59 @@ def load_model():
     model = keras.models.load_model(MODEL_FILENAME)
     return model
 
-# App Streamlit
+def preprocess_image(image: Image.Image):
+    img = image.resize(IMG_SIZE)
+    img_array = np.array(img)
+    img_array_expanded = np.expand_dims(img_array, axis=0)
+    return preprocess_input(img_array_expanded)
+
+# --- CARGA DE MODELO UNA ÚNICA VEZ ---
+model = load_model()
+
+# --- INTERFAZ ---
 st.title("🧠 Clasificador de Tumores Cerebrales")
 
-uploaded_file = st.file_uploader("📤 Sube una imagen", type=["png", "jpg", "jpeg"])
+# Dividir la pantalla en 3 columnas (con una central muy delgada como separador)
+col1, col_mid, col2 = st.columns([1, 0.1, 1])
 
-if uploaded_file:
-    # Mostrar imagen
-    image = Image.open(uploaded_file).convert("RGB")
-    st.image(image, caption="Imagen cargada", use_column_width=True)
+# --- Columna izquierda: Cargar imagen y botón ---
+with col1:
+    uploaded_file = st.file_uploader("📤 Sube una imagen", type=["png", "jpg", "jpeg"])
+    predict_btn = st.button("🔍 Predecir")
 
-    if st.button("🔍 Predecir"):
-        # Preprocesar
-        img = image.resize(IMG_SIZE)
-        img_array = np.array(img)
-        img_array_expanded = np.expand_dims(img_array, axis=0)
-        img_preprocessed = preprocess_input(img_array_expanded)
+# --- Columna derecha: Mostrar imagen y resultado ---
+with col2:
+    if uploaded_file:
+        image = Image.open(uploaded_file).convert("RGB")
 
-        # Predecir
-        model = load_model()
-        prediction_probs = model.predict(img_preprocessed)
-        prob_tumor = prediction_probs[0][0]
+        # Mostrar imagen con altura máxima
+        st.image(image, caption="Imagen cargada", use_column_width=True, output_format="JPEG", clamp=True)
 
-        # Interpretar resultado
-        if prob_tumor >= 0.5:
-            predicted_class = CLASS_NAMES[1]
-            confidence = prob_tumor * 100
-        else:
-            predicted_class = CLASS_NAMES[0]
-            confidence = (1 - prob_tumor) * 100
+        if predict_btn:
+            # Predecir
+            img_preprocessed = preprocess_image(image)
+            prediction_probs = model.predict(img_preprocessed)
+            prob_tumor = prediction_probs[0][0]
 
-        # Mostrar resultado
-        st.subheader("🧾 Resultado")
-        st.write(f"**Predicción:** {predicted_class}")
-        st.write(f"**Confianza:** {confidence:.2f}%")
+            # Interpretar resultado
+            if prob_tumor >= 0.5:
+                predicted_class = CLASS_NAMES[1]
+                confidence = prob_tumor * 100
+            else:
+                predicted_class = CLASS_NAMES[0]
+                confidence = (1 - prob_tumor) * 100
+
+            # Mostrar resultado
+            st.markdown("### 🧾 Resultado")
+            st.markdown(f"**Predicción:** {predicted_class}")
+            st.markdown(f"**Confianza:** {confidence:.2f}%")
+
+# --- Estilos CSS para limitar altura de imagen ---
+st.markdown("""
+<style>
+    img {
+        max-height: 512px;
+        object-fit: contain;
+    }
+</style>
+""", unsafe_allow_html=True)
