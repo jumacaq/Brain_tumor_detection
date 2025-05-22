@@ -34,45 +34,46 @@ def preprocess_image(image: Image.Image):
     img_array_expanded = np.expand_dims(img_array, axis=0)
     return preprocess_input(img_array_expanded)
 
-# --- CARGA DE MODELO UNA ÚNICA VEZ ---
+# --- CARGA DEL MODELO UNA VEZ ---
 model = load_model()
 
-# --- TÍTULO PRINCIPAL ---
-st.markdown("<h1 style='text-align: center;'>🧠 Deep Learning for Brain Tumor MRI</h1>", unsafe_allow_html=True)
+# --- TÍTULO ---
+st.markdown(
+    "<h1 style='text-align: center;'>🧠 Deep Learning for Brain Tumor MRI</h1><br><br>",
+    unsafe_allow_html=True
+)
 
-# --- LAYOUT EN 3 COLUMNAS ---
+# --- DISEÑO EN 3 COLUMNAS ---
 col1, col_mid, col2 = st.columns([1, 0.1, 1])
 
-# --- Columna izquierda: Cargar imagen y botón ---
 with col1:
     uploaded_file = st.file_uploader("📤 Sube una imagen de resonancia magnética", type=["png", "jpg", "jpeg"])
     predict_btn = st.button("🔍 Predecir")
 
-    # Mostrar resultados si se presionó el botón
-    if uploaded_file and predict_btn:
-        image = Image.open(uploaded_file).convert("RGB")
-        img_preprocessed = preprocess_image(image)
-        prediction_probs = model.predict(img_preprocessed)
-        prob_tumor = prediction_probs[0][0]
-
-        if prob_tumor >= 0.5:
-            predicted_class = CLASS_NAMES[1]
-            confidence = prob_tumor * 100
-        else:
-            predicted_class = CLASS_NAMES[0]
-            confidence = (1 - prob_tumor) * 100
-
-        st.markdown("### 🧾 Resultado del diagnóstico")
-        st.markdown(f"**Predicción:** {predicted_class}")
-        st.markdown(f"**Confianza:** {confidence:.2f}%")
-
-# --- Columna derecha: Mostrar imagen subida ---
 with col2:
     if uploaded_file:
         image = Image.open(uploaded_file).convert("RGB")
         st.image(image, caption="Imagen de entrada", use_column_width=True)
 
-# --- ESTILOS PERSONALIZADOS ---
+        if predict_btn:
+            img_preprocessed = preprocess_image(image)
+            prediction_probs = model.predict(img_preprocessed)
+            prob_tumor = prediction_probs[0][0]
+
+            if prob_tumor >= 0.5:
+                predicted_class = CLASS_NAMES[1]
+                confidence = prob_tumor * 100
+            else:
+                predicted_class = CLASS_NAMES[0]
+                confidence = (1 - prob_tumor) * 100
+
+            # Mostrar resultados justo debajo de la imagen
+            st.markdown("---")
+            st.markdown("### 🧾 Resultado del diagnóstico")
+            st.markdown(f"**Predicción:** {predicted_class}")
+            st.markdown(f"**Confianza:** {confidence:.2f}%")
+
+# --- ESTILO PARA IMAGEN ---
 st.markdown("""
 <style>
 img {
