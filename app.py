@@ -14,8 +14,8 @@ st.set_page_config(
 )
 
 # --- CONSTANTES ---
-MODEL_FILENAME = "best_resnet_model.h5"
-GDRIVE_ID = "1LdaSNQbdHSLJdEpB0Jogqwk0Y2g98W5e"
+MODEL_FILENAME = "final_resnet_model.h5"
+GDRIVE_ID = "1hUvC6YGMEhFpQYYjx0n4hHfBmMIdejdg"
 IMG_SIZE = (224, 224)
 CLASS_NAMES = ['Healthy', 'Tumor']
 
@@ -23,11 +23,16 @@ CLASS_NAMES = ['Healthy', 'Tumor']
 @st.cache_resource
 def load_model():
     if not os.path.exists(MODEL_FILENAME):
+        st.info("📥 Descargando modelo desde Google Drive...")
         url = f"https://drive.google.com/uc?id={GDRIVE_ID}"
-        gdown.download(url, MODEL_FILENAME, quiet=False)
+        gdown.download(url, MODEL_FILENAME, quiet=False)  # ← Actually downloads the file!
+        st.success("✅ Modelo descargado exitosamente!")
+        
+    st.info("🧠 Cargando modelo...")
     model = keras.models.load_model(MODEL_FILENAME)
+    st.success("✅ Modelo cargado y listo!")
     return model
-
+     
 def preprocess_image(image: Image.Image):
     img = image.resize(IMG_SIZE)
     img_array = np.array(img)
@@ -39,7 +44,7 @@ model = load_model()
 
 # --- TÍTULO ---
 st.markdown(
-    "<h2 style='text-align: center;'>🧠 Deep Learning for Brain Tumor</h2><br>",
+    "<h2 style='text-align: center;'>🧠 Deep Learning for Brain Tumor Detection</h2><br>",
     unsafe_allow_html=True
 )
 
@@ -55,22 +60,30 @@ with col2:
     if uploaded_file:
         image = Image.open(uploaded_file).convert("RGB")
         st.image(image, use_column_width=True)
+        
         if predict_btn:
-            img_preprocessed = preprocess_image(image)
-            prediction_probs = model.predict(img_preprocessed)
-            prob_tumor = prediction_probs[0][0]
+            with st.spinner("🔄 Analizando imagen..."):
+                img_preprocessed = preprocess_image(image)
+                prediction_probs = model.predict(img_preprocessed, verbose=0)
+                prob_tumor = prediction_probs[0][0]
 
-            if prob_tumor >= 0.5:
-                predicted_class = CLASS_NAMES[1]
-                confidence = prob_tumor * 100
-            else:
-                predicted_class = CLASS_NAMES[0]
-                confidence = (1 - prob_tumor) * 100
+                if prob_tumor >= 0.5:
+                    predicted_class = CLASS_NAMES[1]
+                    confidence = prob_tumor * 100
+                else:
+                    predicted_class = CLASS_NAMES[0]
+                    confidence = (1 - prob_tumor) * 100
 
-            # Mostrar resultados justo debajo de la imagen
-            st.markdown("#### 🧾 Resultado del diagnóstico")
-            st.markdown(f"**Predicción:** {predicted_class}")
-            st.markdown(f"**Confianza:** {confidence:.2f}%")
+                # Mostrar resultados justo debajo de la imagen
+                st.markdown("#### 🧾 Resultado del diagnóstico")
+                st.markdown(f"**Predicción:** {predicted_class}")
+                st.markdown(f"**Confianza:** {confidence:.2f}%")
+                
+                # Add color coding for results
+                if predicted_class == "Tumor":
+                    st.error(f"⚠️ Se detectó un posible tumor cerebral")
+                else:
+                    st.success(f"✅ No se detectaron anomalías significativas")
 
 # --- ESTILO PARA IMAGEN ---
 st.markdown("""
