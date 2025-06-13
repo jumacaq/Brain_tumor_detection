@@ -23,14 +23,14 @@ CLASS_NAMES = ['Healthy', 'Tumor']
 @st.cache_resource
 def load_model():
     if not os.path.exists(MODEL_FILENAME):
-        st.info("📥 Descargando modelo desde Google Drive...")
+        #st.info("📥 Descargando modelo desde Google Drive...")
         url = f"https://drive.google.com/uc?id={GDRIVE_ID}"
         gdown.download(url, MODEL_FILENAME, quiet=False)  # ← Actually downloads the file!
-        st.success("✅ Modelo descargado exitosamente!")
+        #st.success("✅ Modelo descargado exitosamente!")
         
-    st.info("🧠 Cargando modelo...")
+    #st.info("🧠 Cargando modelo...")
     model = keras.models.load_model(MODEL_FILENAME)
-    st.success("✅ Modelo cargado y listo!")
+    #st.success("✅ Modelo cargado y listo!")
     return model
      
 def preprocess_image(image: Image.Image):
