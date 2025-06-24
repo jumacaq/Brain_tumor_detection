@@ -5,10 +5,38 @@ Este repositorio documenta un proyecto para la clasificación de imágenes médi
 Las imágenes utilizadas para el entrenamiento se encuentra en el siguiente repositorio de Kaggle:
 https://www.kaggle.com/code/nirmalgaud/brain-tumor-classification-with-fibonaccinet/input
 
-Pueden visualizar como funciona nuestro clasificador en la siguiente página de Streamlit:<br>
-https://.streamlit.app/
+---
+
+## Conceptos relacionados
+
+### La red neuronal convolucional (CNN)
+Es un tipo de red neuronal profunda que está diseñada para procesar eficazmente datos en cuadrícula o píxeles, como imágenes. Consisten en capas de filtros convolucionales que aprenden representaciones jerárquicas de las características dentro de los datos de entrada. Las CNN se utilizan ampliamente en tareas como la clasificación, la detección y la segmentación de imágenes.
+
+
+
+### Residual Network (ResNet)
+Son un tipo de red neuronal profunda que utiliza **conexiones de salto** (o *skip connections*) para mejorar el aprendizaje en modelos con muchas capas. Estas conexiones permiten que la información pase directamente entre capas no consecutivas, lo que ayuda a **evitar el problema del gradiente desvanecido**, una dificultad común en redes profundas donde los gradientes se vuelven muy pequeños al retropropagarse.
+
+A diferencia de redes tradicionales, donde cada capa solo se conecta con la siguiente, en ResNet **la entrada de un bloque también se suma a su salida**, creando un atajo que facilita el flujo de información y mejora la actualización de los pesos durante el entrenamiento. Esto se implementa frecuentemente usando una función identidad, lo que asegura que el gradiente se conserve sin modificaciones.
+
+Una arquitectura típica de ResNet incluye filtros de **convolución 3x3**, capas de **submuestreo** (stride 2), **agrupación promedio global** y una capa final **completamente conectada con softmax**.
+
+ResNet ha demostrado ser muy eficaz en tareas de visión por computadora, como clasificación de imágenes, al permitir construir redes muy profundas sin pérdida de rendimiento.
+
+
+
+### Aprendizaje por Transferencia (Transfer Learning)
+
+El **aprendizaje por transferencia** es una técnica de aprendizaje automático que permite **reutilizar el conocimiento aprendido por un modelo en una tarea para resolver otra tarea relacionada**. A diferencia del enfoque tradicional, donde cada modelo se entrena desde cero para tareas específicas, el aprendizaje por transferencia parte de un **modelo preentrenado**, lo que **reduce el tiempo de entrenamiento y mejora el rendimiento** cuando los datos disponibles son limitados.
+
+Este enfoque es especialmente útil cuando los datos de entrenamiento y los datos futuros **no comparten la misma distribución o espacio de características**, algo común en problemas del mundo real. Por ejemplo, podríamos tener muchos datos en un dominio (fuente) y pocos en otro (destino), pero si las tareas están relacionadas, **transferir el conocimiento puede ser muy eficaz**.
+
+Los humanos usamos este principio de forma natural: aplicamos conocimientos previos para resolver nuevos problemas similares. El aprendizaje por transferencia lleva esta capacidad al campo de las máquinas, **rompiendo el paradigma del aprendizaje aislado**.
+
+Cuanto **más similares sean las tareas**, más efectiva será la transferencia. Es una herramienta clave en áreas como visión por computadora, procesamiento del lenguaje natural y más.
 
 ---
+
 
 ## 🚀 Estructura del Proyecto por Bloques
 
