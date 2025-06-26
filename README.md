@@ -1,6 +1,6 @@
 # Clasificación de Imágenes Médicas con ResNet50 🧠🔬
 
-Este repositorio documenta un proyecto para la clasificación de imágenes médicas, distinguiendo entre imágenes "Healthy" y con "Tumor". Se utiliza un modelo de Deep Learning basado en la arquitectura ResNet50, implementado con TensorFlow y Keras. El flujo de trabajo sigue una estructura clara desde la preparación de los datos hasta la evaluación del modelo.
+Este repositorio documenta un proyecto para la clasificación de imágenes médicas, distinguiendo entre imágenes "Healthy" y con "Tumor". Se utiliza un modelo de Deep Learning basado en la arquitectura ResNet50, implementado con TensorFlow y Keras.  
 
 Las imágenes utilizadas para el entrenamiento se encuentra en el siguiente repositorio de Kaggle:
 https://www.kaggle.com/code/nirmalgaud/brain-tumor-classification-with-fibonaccinet/input
@@ -35,10 +35,35 @@ Los humanos usamos este principio de forma natural: aplicamos conocimientos prev
 
 Cuanto **más similares sean las tareas**, más efectiva será la transferencia. Es una herramienta clave en áreas como visión por computadora, procesamiento del lenguaje natural y más.
 
+![Transfer Learning](Images/transfer_learn.png)
+
 ---
 
 
-## 🚀 Estructura del Proyecto por Bloques
+## 🚀 Estructura del Proyecto 
+
+La estructura del proyecto es la siguiente:
+
+```bash
+Brain_tumor_detection/
+│
+├── app.py                     # App de Streamlit
+├── requirements.txt           # Dependencias del proyecto
+├── README.md                  # Descripción general
+│
+├── model/
+│   └── final_resnet_model.h5 # Modelo entrenado (vía Git LFS)
+│
+├── notebooks/
+│   └── tumor_detection_pipeline.ipynb  # Notebook de desarrollo / entrenamiento
+│
+├── Images/
+│   ├── confussion_matrix.png
+│   ├── training_history.png
+│   └── transfer_learn.png    # Usadas en README.md
+│
+└── .gitattributes             # Git LFS configurado para .h5
+```
 
 El proyecto se organiza en cuatro bloques funcionales principales:
 
@@ -60,46 +85,47 @@ Aquí se define la arquitectura del modelo de Transfer Learning y se lleva a cab
 - **Modelo Base ResNet50**: Se carga la arquitectura ResNet50 pre-entrenada, sin su capa clasificadora original.
 - **Capas Personalizadas**: Se añaden capas superiores (ej. GlobalAveragePooling, Dropout, Dense con activación sigmoide) para adaptar el modelo a la tarea de clasificación binaria.
 - **Entrenamiento en Dos Fases**:
-    1.  **Entrenamiento del Clasificador**: Inicialmente, solo se entrenan las capas personalizadas nuevas, manteniendo congelado el modelo base ResNet50.
-    2.  **Fine-Tuning**: Posteriormente, se descongela el modelo base ResNet50 (o parte de él) y se continúa el entrenamiento de todo el modelo con una tasa de aprendizaje más baja para un ajuste fino.
+    1.  **Entrenamiento del Clasificador**: Inicialmente, solo se entrenan las capas personalizadas nuevas, manteniendo congelado el modelo base ResNet50. Se establece la ejecución de 10   epocas en esta primera fase, obteniendose estos resultados:
+       
+       accuracy: 0.9484 - auc: 0.9888 - loss: 0.1678 - val_accuracy: 0.9520 - val_auc: 0.9937 - val_loss: 0.1444 - learning_rate: 0.0010
+    3.  **Fine-Tuning**: Posteriormente, se descongela el modelo base ResNet50 (o parte de él) y se continúa el entrenamiento de todo el modelo con una tasa de aprendizaje más baja para un ajuste fino. Se agregan 10 épocas adicionales para el fine-tuning, obteniendo una mejora en los resultados:
+
+       accuracy: 0.9973 - auc: 1.0000 - loss: 0.0392 - val_accuracy: 0.9960 - val_auc: 0.9999 - val_loss: 0.0395 - learning_rate: 1.0000e-05
 - **Callbacks**: Se utilizan `EarlyStopping`, `ModelCheckpoint` y `ReduceLROnPlateau` para gestionar el entrenamiento, guardar el mejor modelo y ajustar la tasa de aprendizaje dinámicamente.
 
 ### Bloque 4: **Evaluación del Modelo y Visualización de Resultados** 📊📈
 Finalmente, se evalúa el rendimiento del modelo entrenado utilizando el conjunto de prueba:
-- Se calculan métricas clave como Pérdida, Exactitud y AUC.
-- Se generan visualizaciones para interpretar el rendimiento:
-    - **Matriz de Confusión**.
-    - **Reporte de Clasificación** (precisión, recall, F1-score).
-    - **Curva ROC**.
+
+- **Matriz de Confusión**.
+  
+     ![confussion_matrix](Images/confussion_matrix.png)
+
+- **Reporte de Clasificación** (precisión, recall, F1-score).
+ 
+  ### 📊 Reporte de Clasificación
+
+```
+                          precision    recall  f1-score   support
+
+              Healthy       0.99      0.99      0.99       200
+                Tumor       0.99      1.00      1.00       300
+              accuracy                           0.99       500
+             macro avg       0.99      0.99      0.99       500
+          weighted avg       0.99      0.99      0.99       500
+```
+ 
+
+- **Curva ROC**.
+  
+  ![roc_curve](Images/roc_curve.png)
+  
 - Se grafica el **historial de entrenamiento** (pérdida y exactitud a lo largo de las épocas) para analizar el proceso de aprendizaje.
+  
+   ![training_history](Images/training_history.png)
+  
 
----
 
-## 🛠️ Cómo Usar Este Repositorio
 
-1.  **Clona el repositorio**:
-    ```bash
-    git clone https://github.com/BootcampXperience/ML_Brain_Tumor_Detection.git
-    cd ML_Brain_Tumor_Detection
-    ```
-
-2.  **Configura tu Entorno**:
-    *   Asegúrate de tener Python y las librerías necesarias instaladas (principalmente TensorFlow, Keras, Scikit-learn, Pandas, Imbalanced-learn, Matplotlib). Se recomienda usar un entorno virtual.
-
-3.  **Prepara tus Datos**:
-    *   Organiza tus imágenes en una carpeta `images` (o según se especifique en el script) con subcarpetas por categoría (ej. `images/Healthy/`, `images/Tumor/`).
-
-4.  **Ejecuta el Script Principal**:
-    *   Revisa y ajusta las configuraciones en el script de Python si es necesario.
-    *   Ejecuta el script:
-        ```bash
-        python3 Brain_Tumor_ResNet.py
-        ```
-
-5.  **Revisa los Resultados**:
-    *   El script guardará el mejor modelo y mostrará/guardará gráficos de evaluación y métricas.
-
----
 
 ## 🔬 Tecnologías Clave
 
