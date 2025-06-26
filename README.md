@@ -70,12 +70,12 @@ El proyecto se organiza en cuatro bloques funcionales principales:
 ### Bloque 1: **Configuración Inicial y Carga de Datos** 📂
 Esta fase establece el entorno básico y carga el conjunto de datos de imágenes.
 - Se preparan las herramientas necesarias, siendo **TensorFlow** el framework principal para el modelado.
-- Las imágenes se cargan desde un sistema de archivos estructurado, donde las rutas y sus correspondientes etiquetas (ej. "Healthy", "Tumor") se organizan en un formato manejable, típicamente un DataFrame de Pandas.
+- Como datos tenemos 5000 imágenes de resonancia magnética que se cargan desde un sistema de archivos estructurado, donde las rutas y sus correspondientes etiquetas (ej. "Healthy" con 2000 imágenes , "Tumor" con 3000 imágenes) se organizan en un formato manejable, típicamente un DataFrame de Pandas.
 
 ### Bloque 2: **Preprocesamiento y Generadores de Imágenes** 🖼️➡️🔢
 Antes del entrenamiento, los datos de imágenes requieren una preparación significativa:
 - **Codificación de Etiquetas**: Las etiquetas textuales de las clases se convierten a un formato numérico.
-- **División de Datos**: El dataset se divide en conjuntos de entrenamiento, validación y prueba.
+- **División de Datos**: El dataset se divide en conjuntos de entrenamiento (80%), validación(10%) y prueba(10%).
 - **Generadores de Datos (`ImageDataGenerator`)**: Se configuran generadores para alimentar eficientemente al modelo:
     - Para el entrenamiento, se aplica **aumentación de datos** (rotaciones, zoom, etc.) y el preprocesamiento específico de ResNet.
     - Para validación y prueba, solo se aplica el preprocesamiento de ResNet, sin aumentación, para una evaluación objetiva.
@@ -97,6 +97,8 @@ Aquí se define la arquitectura del modelo de Transfer Learning y se lleva a cab
 Finalmente, se evalúa el rendimiento del modelo entrenado utilizando el conjunto de prueba:
 
 - **Matriz de Confusión**.
+
+  Realizada sobre la base de test, muestra una precisión del 99%
   
      ![confussion_matrix](Images/confussion_matrix.png)
 
