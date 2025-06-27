@@ -126,6 +126,11 @@ Finalmente, se evalúa el rendimiento del modelo entrenado utilizando el conjunt
    ![training_history](Images/training_history.png)
   
 
+## 🛠️ Despliegue en streamlit
+
+- Se ejecuta un MVP desplegado en la plataforma Streamlit para probar el modelo con imagenes nuevas
+
+ https://braintumordetection-1.streamlit.app/
 
 
 
